@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: BasicProjectile
   m_EditorClassIdentifier: Assembly-CSharp::ProjectileData
   damage: 10
-  speed: 10
-  range: 10
-  cooldown: 1
-  pierceCount: 0
-  knockback: 0
-  projectileColor: {r: 1, g: 0, b: 0, a: 1}
+  speed: 20
+  range: 100
+  cooldown: 0.1
+  pierceCount: 3
+  knockback: 5
+  lifetime: 1
+  projectileColor: {r: 0, g: 1, b: 0, a: 1}
   scale: 1

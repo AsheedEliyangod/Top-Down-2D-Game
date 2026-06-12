@@ -8,21 +8,30 @@ public class Projectile : MonoBehaviour
     private float distanceTravelled;
     private int enemiesHit;
 
-   public void Initialize(ProjectileData data, Vector2 shootDirection)
-   {
-      projectileData = data;
-      direction = shootDirection.normalized;
+    public void Initialize(ProjectileData data, Vector2 shootDirection)
+    {
+        projectileData = data;
+        direction = shootDirection.normalized;
 
-      transform.localScale = Vector3.one * projectileData.scale;
+        // Reset pooled values
+        distanceTravelled = 0f;
+        enemiesHit = 0;
 
-      SpriteRenderer spriteRenderer =
-          GetComponent<SpriteRenderer>();
+        transform.localScale = Vector3.one * projectileData.scale;
 
-      spriteRenderer.color =
-          projectileData.projectileColor;
+        SpriteRenderer spriteRenderer =
+            GetComponent<SpriteRenderer>();
 
-      Destroy(gameObject, projectileData.lifetime);
-   }
+        spriteRenderer.color =
+            projectileData.projectileColor;
+
+        // Prevent old invokes from pooled objects
+        CancelInvoke();
+
+        // Return to pool after lifetime
+        Invoke(nameof(ReturnToPool),
+            projectileData.lifetime);
+    }
 
     private void Update()
     {
@@ -37,31 +46,39 @@ public class Projectile : MonoBehaviour
 
         if (distanceTravelled >= projectileData.range)
         {
-            Destroy(gameObject);
+            ReturnToPool();
         }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-       EnemyHealth enemy = other.GetComponent<EnemyHealth>();
+        EnemyHealth enemy =
+            other.GetComponent<EnemyHealth>();
 
-       if (enemy == null)
-          return;
+        if (enemy == null)
+            return;
 
-       enemy.TakeDamage(projectileData.damage);
+        enemy.TakeDamage(projectileData.damage);
 
-       Vector2 knockbackDirection =
-          (enemy.transform.position - transform.position).normalized;
+        Vector2 knockbackDirection =
+            (enemy.transform.position - transform.position)
+            .normalized;
 
-       enemy.ApplyKnockback(
-          knockbackDirection * projectileData.knockback);
+        enemy.ApplyKnockback(
+            knockbackDirection *
+            projectileData.knockback);
 
-       enemiesHit++;
+        enemiesHit++;
 
-       if (enemiesHit > projectileData.pierceCount)
-       {
-         Destroy(gameObject);
-       }
+        // Pierce logic
+        if (enemiesHit > projectileData.pierceCount)
+        {
+            ReturnToPool();
+        }
     }
-   
+
+    private void ReturnToPool()
+    {
+        ProjectilePool.Instance.ReturnProjectile(this);
+    }
 }

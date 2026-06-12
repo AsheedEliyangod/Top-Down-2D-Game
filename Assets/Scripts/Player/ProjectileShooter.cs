@@ -3,7 +3,6 @@ using UnityEngine;
 public class ProjectileShooter : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private Projectile projectilePrefab;
     [SerializeField] private ProjectileData projectileData;
 
     private float lastFireTime;
@@ -23,10 +22,14 @@ public class ProjectileShooter : MonoBehaviour
 
         lastFireTime = Time.time;
 
-        Projectile projectile = Instantiate(
-            projectilePrefab,
-            transform.position,
-            Quaternion.identity);
+        Projectile projectile =
+            ProjectilePool.Instance.GetProjectile();
+
+        if (projectile == null)
+            return;
+
+        projectile.transform.position =
+            transform.position;
 
         projectile.Initialize(
             projectileData,
