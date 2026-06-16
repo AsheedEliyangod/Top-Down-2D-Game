@@ -114,27 +114,11 @@ Assets
 
 ---
 
-## Screenshots
-
-### Gameplay
-
-Add screenshots here.
-
-### Victory Screen
-
-Add screenshot here.
-
-### Game Over Screen
-
-Add screenshot here.
-
----
-
 ## Demo Video
 
 Demo Video:
 
-(Add Google Drive Link Here)
+[(Add Google Drive Link Here)](https://drive.google.com/drive/folders/1xCw9LntrVAo6J4WGX9vnY-oMxQ5NM0nH?usp=drive_link)
 
 Example:
 
