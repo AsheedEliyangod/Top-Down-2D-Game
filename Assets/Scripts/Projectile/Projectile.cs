@@ -8,16 +8,22 @@ public class Projectile : MonoBehaviour
     private float distanceTravelled;
     private int enemiesHit;
 
-    public void Initialize(ProjectileData data, Vector2 shootDirection)
+    public void Initialize(
+        ProjectileData data,
+        Vector2 shootDirection)
     {
         projectileData = data;
-        direction = shootDirection.normalized;
 
-        // Reset pooled values
+        direction =
+            shootDirection.normalized;
+
+        // Reset values
         distanceTravelled = 0f;
         enemiesHit = 0;
 
-        transform.localScale = Vector3.one * projectileData.scale;
+        transform.localScale =
+            Vector3.one *
+            projectileData.scale;
 
         SpriteRenderer spriteRenderer =
             GetComponent<SpriteRenderer>();
@@ -25,60 +31,89 @@ public class Projectile : MonoBehaviour
         spriteRenderer.color =
             projectileData.projectileColor;
 
-        // Prevent old invokes from pooled objects
+        // Prevent old Invoke calls
         CancelInvoke();
 
-        // Return to pool after lifetime
-        Invoke(nameof(ReturnToPool),
+        // Lifetime
+        Invoke(
+            nameof(ReturnToPool),
             projectileData.lifetime);
     }
 
     private void Update()
     {
         float moveDistance =
-            projectileData.speed * Time.deltaTime;
+            projectileData.speed *
+            Time.deltaTime;
 
         transform.Translate(
             direction * moveDistance,
             Space.World);
 
-        distanceTravelled += moveDistance;
+        distanceTravelled +=
+            moveDistance;
 
-        if (distanceTravelled >= projectileData.range)
+        // Maximum range
+        if (distanceTravelled >=
+            projectileData.range)
         {
             ReturnToPool();
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(
+        Collider2D other)
     {
+        // ---------- Enemy ----------
         EnemyHealth enemy =
             other.GetComponent<EnemyHealth>();
 
-        if (enemy == null)
+        if (enemy != null)
+        {
+            enemy.TakeDamage(
+                projectileData.damage);
+
+            Vector2 knockbackDirection =
+                (enemy.transform.position
+                - transform.position)
+                .normalized;
+
+            enemy.ApplyKnockback(
+                knockbackDirection *
+                projectileData.knockback);
+
+            enemiesHit++;
+
+            // Pierce logic
+            if (enemiesHit >
+                projectileData.pierceCount)
+            {
+                ReturnToPool();
+            }
+
             return;
+        }
 
-        enemy.TakeDamage(projectileData.damage);
-
-        Vector2 knockbackDirection =
-            (enemy.transform.position - transform.position)
-            .normalized;
-
-        enemy.ApplyKnockback(
-            knockbackDirection *
-            projectileData.knockback);
-
-        enemiesHit++;
-
-        // Pierce logic
-        if (enemiesHit > projectileData.pierceCount)
+        // ---------- Walls ----------
+        if (other.CompareTag("Wall"))
         {
             ReturnToPool();
+            return;
+        }
+
+        // ---------- Obstacles ----------
+        if (other.CompareTag("Obstacle"))
+        {
+            ReturnToPool();
+            return;
         }
     }
 
     private void ReturnToPool()
     {
-        ProjectilePool.Instance.ReturnProjectile(this);
+        CancelInvoke();
+
+        ProjectilePool.Instance
+            .ReturnProjectile(this);
     }
 }

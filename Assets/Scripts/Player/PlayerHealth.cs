@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
-    [SerializeField] private float maxHealth = 100f;
+    [SerializeField]
+    private float maxHealth = 100f;
 
     private float currentHealth;
 
@@ -15,7 +16,14 @@ public class PlayerHealth : MonoBehaviour
     {
         currentHealth -= damage;
 
-        Debug.Log("Player Health: " + currentHealth);
+        if (currentHealth < 0)
+        {
+            currentHealth = 0;
+        }
+
+        Debug.Log(
+            "Player Health: " +
+            currentHealth);
 
         if (currentHealth <= 0)
         {
@@ -25,13 +33,20 @@ public class PlayerHealth : MonoBehaviour
 
     private void Die()
     {
-        Debug.Log("Game Over");
+      Debug.Log("Game Over");
 
-        gameObject.SetActive(false);
+      gameObject.SetActive(false);
+
+      GameManager.Instance.ShowGameOver();
     }
 
     public float GetCurrentHealth()
     {
         return currentHealth;
+    }
+
+    public float GetMaxHealth()
+    {
+        return maxHealth;
     }
 }

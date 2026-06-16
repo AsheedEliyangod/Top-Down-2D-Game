@@ -20,4 +20,4 @@ MonoBehaviour:
   knockback: 5
   lifetime: 1
   projectileColor: {r: 0, g: 1, b: 0, a: 1}
-  scale: 1
+  scale: 1.5
