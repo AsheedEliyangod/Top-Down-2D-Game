@@ -67,7 +67,7 @@ git clone https://github.com/AsheedEliyangod/Top-Down-2D-Game.git
 | Move Down | S |
 | Move Left | A |
 | Move Right | D |
-| Shoot | Left Mouse Button |
+| Shoot | Space Button |
 
 ---
 
